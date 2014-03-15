@@ -29,10 +29,10 @@ end
 
 image_urls = []
 
-images.each do |image|
+images.reverse.each do |image|
 	if not image_urls.include?(image['imageUrl'])
 		image_urls << image['imageUrl']
-		
+
 		query = "INSERT INTO images (date,image_url,image_provider_specific,image_provider_type,image_title,image_width,image_height) VALUES (\'#{image['date']}\',"
 
 		if image['imageUrl'] != ''
