@@ -42,10 +42,14 @@ get '/images' do
 
 	result = c.exec( "SELECT * FROM images LIMIT #{limit} OFFSET #{offset}" )
 	result.each do |row|
+		image_provider_specific = nil
+		if row['image_provider_specific'] != "null"
+			image_provider_specific = JSON.parse(row['image_provider_specific'])		
+		end
 		images << {
 			"imageUrl" => row['image_url'],
 			"title" => row['image_title'],
-			"providerSpecific" => row['image_provider_specific'],
+			"providerSpecific" => image_provider_specific,
 			"providerType" => row['image_provider_type'],
 			"width" => row['image_width'],
 			"height" => row['image_height']
@@ -55,7 +59,7 @@ get '/images' do
 	c.close	
 
 	content_type 'application/json'
-	full_envelope = {"data" => images.reverse}
+	full_envelope = {"data" => images}
 	paging = {"page" => page, "limit" => limit, "total_pages" => total_pages.to_s, "total_count" => total_images.to_s }
 	full_envelope["paging"] = paging
 	full_envelope.to_json
