@@ -3,6 +3,7 @@
 require 'pg'
 require 'json'
 require 'uri'
+require 'time'
 
 filename = ARGV[0]
 database_url = ARGV[1]
@@ -18,7 +19,16 @@ c = PG.connect(
 	:dbname => db.path[1..-1] )
 
 images.each do |image|
-	query = "INSERT INTO images (image_url,image_provider_specific,image_provider_type,image_title,image_width,image_height) VALUES ("
+	raw_date = image['date']
+
+	raw_date = raw_date.gsub('ISODate("', '')
+	raw_date = raw_date.gsub('")', '')
+
+	image['date'] = Time.parse(raw_date)
+end
+
+images.each do |image|
+	query = "INSERT INTO images (date,image_url,image_provider_specific,image_provider_type,image_title,image_width,image_height) VALUES (\'#{image['date']}\',"
 
 	if image['imageUrl'] != ''
 		image_url = image['imageUrl']
@@ -56,7 +66,6 @@ images.each do |image|
 	c.exec(query)
 
 	p "Imported #{image['title']}"
-
 end
 
 c.close

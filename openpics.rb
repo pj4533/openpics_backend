@@ -40,13 +40,15 @@ get '/images' do
 		:dbname => db.path[1..-1] )
 	images = []
 
-	result = c.exec( "SELECT * FROM images LIMIT #{limit} OFFSET #{offset}" )
+	result = c.exec( "SELECT * FROM images ORDER BY date DESC LIMIT #{limit} OFFSET #{offset}" )
 	result.each do |row|
 		image_provider_specific = nil
 		if row['image_provider_specific'] != "null"
 			image_provider_specific = JSON.parse(row['image_provider_specific'])		
 		end
 		images << {
+			"date" => row['date'],
+			"id" => row['image_id'],
 			"imageUrl" => row['image_url'],
 			"title" => row['image_title'],
 			"providerSpecific" => image_provider_specific,
