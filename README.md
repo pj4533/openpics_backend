@@ -8,7 +8,7 @@ Base URL: http://openpics.herokuapp.com
 
 ## Endpoints
 
-##### `GET /images
+##### `GET /images`
 
 Get recently favorited images
 
