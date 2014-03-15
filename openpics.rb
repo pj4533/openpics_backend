@@ -16,8 +16,32 @@ get '/' do
 	haml :index, :locals => {}
 end
 
+post '/images' do
+	image_json = JSON.parse(request.body.read)
+
+	db = URI.parse(ENV["DATABASE_URL"])
+	c = PG.connect(
+		:host => db.host, 
+		:port => db.port,
+		:user => db.user,
+		:password => db.password,
+		:dbname => db.path[1..-1] )
+	result = c.exec( "SELECT * FROM images WHERE image_url = \'#{image_json['imageUrl']}\'" )
+	if result.count > 0
+		image = result[0]
+		query = "UPDATE images SET date = DEFAULT WHERE image_id = #{image['image_id']}"
+	else
+		query = get_insert_query_from_image(c,image_json)
+	end
+	c.exec(query)
+
+	content_type 'application/json'
+	'{}'
+end
+
 get '/images' do
 	page = params[:page]
+
 	limit = params[:limit]
 
 	if !page
