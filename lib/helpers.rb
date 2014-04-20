@@ -1,7 +1,7 @@
 require 'json'
 require 'rubygems'
 
-def get_total_images
+def get_total_images(query_clause)
 	db = URI.parse(ENV["DATABASE_URL"])
 	c = PG.connect(
 		:host => db.host, 
@@ -9,7 +9,7 @@ def get_total_images
 		:user => db.user,
 		:password => db.password,
 		:dbname => db.path[1..-1] )
-	result = c.exec( "SELECT COUNT(*) FROM images" )
+	result = c.exec( "SELECT COUNT(*) FROM images #{query_clause}" )
 	total_image_count = result[0]['count'].to_i
 	c.close
 

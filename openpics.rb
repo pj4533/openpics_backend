@@ -46,7 +46,7 @@ get '/images' do
 	StatsMix.track("Pages Returned")
 
 	page = params[:page]
-
+	query = params[:query]
 	limit = params[:limit]
 
 	if !page
@@ -56,8 +56,13 @@ get '/images' do
 		limit = 50
 	end
 
+	query_clause = ""
+	if query
+		query_clause = "WHERE image_title ILIKE '%#{query}%'"
+	end
+
 	offset = page.to_i * limit.to_i
-	total_images = get_total_images
+	total_images = get_total_images(query_clause)
 	total_pages = (total_images / limit.to_i).ceil
 
 	db = URI.parse(ENV["DATABASE_URL"])
@@ -69,7 +74,8 @@ get '/images' do
 		:dbname => db.path[1..-1] )
 	images = []
 
-	result = c.exec( "SELECT * FROM images ORDER BY date DESC LIMIT #{limit} OFFSET #{offset}" )
+	result = c.exec( "SELECT * FROM images #{query_clause} ORDER BY date DESC LIMIT #{limit} OFFSET #{offset}" )
+	
 	result.each do |row|
 		image_provider_specific = nil
 		if row['image_provider_specific'] != "null"
