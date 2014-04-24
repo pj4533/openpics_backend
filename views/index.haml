@@ -1,7 +1,15 @@
 .container
 	.starter-template
+		%form{ :action => "webimages", :class => "form-inline", :role => "form"}
+			%div{ :class => "form-group" }
+				%label{:class => "sr-only", :for => "query"} Search:
+				%input{:type => "text", :name => "query", :class => "form-control", :placeholder => "Search for images..."}
+			%div{ :class => "form-group" }
+				%input{:type => "submit", :value => "Search", :class => "btn btn-default"}
+		<br/>
+		<br/>
 		%div{ :class => "row"}
-			- get_images(nil,50,0,false)['data'].each do |image|
+			- images.each do |image|
 				%div{ :class => "col-xs-6 col-md-3"}
 					%div{ :class => "thumbnail" }
 						%img{:src => "#{image['imageUrl']}", :width => "180"}
@@ -17,4 +25,3 @@
 								%div{:class => "btn-group btn-group-xs"}
 									%form{:action => "image/hide/#{image['id']}"}
 										%input{:type => "submit", :value => "Hide", :class => "btn btn-xs btn-default"}
-							

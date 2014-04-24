@@ -14,7 +14,7 @@ require 'statsmix'
 set :root, File.dirname(__FILE__)
 
 get '/' do
-	haml :index, :locals => {}
+	haml :index, :locals => { :images => get_images(nil,50,0,false)['data'] }
 end
 
 post '/images' do
@@ -42,6 +42,21 @@ post '/images' do
 	'{}'
 end
 
+get '/webimages' do
+	page = params[:page]
+	query = params[:query]
+	limit = params[:limit]
+
+	if !page
+		page = 0
+	end
+	if !limit
+		limit = 50
+	end
+
+	haml :index, :locals => { :images => get_images(query,limit,page,false)['data'] }
+end
+
 get '/images' do
 	StatsMix.track("Pages Returned")
 
@@ -58,7 +73,6 @@ get '/images' do
 
 	content_type 'application/json'
 	get_images(query,limit,page,true).to_json
-
 end
 
 get '/image/hide/:image_id' do
