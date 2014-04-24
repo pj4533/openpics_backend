@@ -14,7 +14,7 @@
 					%div{ :class => "thumbnail" }
 						%img{:src => "#{image['imageUrl']}", :width => "180"}
 						%div{ :class => "caption" }
-						%p
+						%p{:style => "height: 50px;overflow: hidden; text-overflow: ellipsis;"}
 							#{image['title']}
 						%div{:class => "btn-toolbar", :role => "toolbar"}
 							- if image['hidden']=="t"
