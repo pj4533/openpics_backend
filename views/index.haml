@@ -1,26 +1,20 @@
 .container
 	.starter-template
-		- images = get_images(nil,50,0,false)
-		%table{:class => "table"}
-			%thead
-				%th 
-					%div{ :class => "input-group" }
-						%span{ :class => "input-group-addon"} Image title
-						%input{ :id => "filter", :type => "text", :class => "form-control", :placeholder => "Type here to filter..."}
-			%tbody{:class => "searchable"}
-				- images['data'].each do |image|
-					%tr
-						%td 
-							%a(href="#{image['imageUrl']}") #{image['title']} <br/>
-						%td
-							%div{:class => "btn-toolbar", :role => "toolbar"}
-								- if image['hidden']=="t"
-									%div{:class => "btn-group btn-group-xs"}
-										%form{:action => "image/unhide/#{image['id']}"}
-											%input{:type => "submit", :value => "Unhide", :class => "btn btn-xs btn-default"}
-								- if image['hidden']=="f"
-									%div{:class => "btn-group btn-group-xs"}
-										%form{:action => "image/hide/#{image['id']}"}
-											%input{:type => "submit", :value => "Hide", :class => "btn btn-xs btn-default"}
-
-	
+		%div{ :class => "row"}
+			- get_images(nil,50,0,false)['data'].each do |image|
+				%div{ :class => "col-xs-6 col-md-3"}
+					%div{ :class => "thumbnail" }
+						%img{:src => "#{image['imageUrl']}", :width => "180"}
+						%div{ :class => "caption" }
+						%p
+							#{image['title']}
+						%div{:class => "btn-toolbar", :role => "toolbar"}
+							- if image['hidden']=="t"
+								%div{:class => "btn-group btn-group-xs"}
+									%form{:action => "image/unhide/#{image['id']}"}
+										%input{:type => "submit", :value => "Unhide", :class => "btn btn-xs btn-default"}
+							- if image['hidden']=="f"
+								%div{:class => "btn-group btn-group-xs"}
+									%form{:action => "image/hide/#{image['id']}"}
+										%input{:type => "submit", :value => "Hide", :class => "btn btn-xs btn-default"}
+							
