@@ -56,15 +56,12 @@ get '/images' do
 		limit = 50
 	end
 
-	query_clause = ""
-	if query
-		query_clause = "WHERE image_title ILIKE '%#{query}%'"
-	end
+	content_type 'application/json'
+	get_images(query,limit,page,true).to_json
 
-	offset = page.to_i * limit.to_i
-	total_images = get_total_images(query_clause)
-	total_pages = (total_images / limit.to_i).ceil
+end
 
+get '/image/hide/:image_id' do
 	db = URI.parse(ENV["DATABASE_URL"])
 	c = PG.connect(
 		:host => db.host, 
@@ -72,33 +69,20 @@ get '/images' do
 		:user => db.user,
 		:password => db.password,
 		:dbname => db.path[1..-1] )
-	images = []
+	c.exec("UPDATE images SET is_hidden = TRUE WHERE image_id = #{params[:image_id]}")
 
-	result = c.exec( "SELECT * FROM images #{query_clause} ORDER BY date DESC LIMIT #{limit} OFFSET #{offset}" )
-	
-	result.each do |row|
-		image_provider_specific = nil
-		if row['image_provider_specific'] != "null"
-			image_provider_specific = JSON.parse(row['image_provider_specific'])		
-		end
-		images << {
-			"date" => row['date'],
-			"id" => row['image_id'],
-			"imageUrl" => row['image_url'],
-			"title" => row['image_title'],
-			"providerSpecific" => image_provider_specific,
-			"providerType" => row['image_provider_type'],
-			"width" => row['image_width'],
-			"height" => row['image_height']
-		}
-	end
+	redirect  URI::encode '/'
+end
 
-	c.close	
+get '/image/unhide/:image_id' do
+	db = URI.parse(ENV["DATABASE_URL"])
+	c = PG.connect(
+		:host => db.host, 
+		:port => db.port,
+		:user => db.user,
+		:password => db.password,
+		:dbname => db.path[1..-1] )
+	c.exec("UPDATE images SET is_hidden = FALSE WHERE image_id = #{params[:image_id]}")
 
-	content_type 'application/json'
-	full_envelope = {"data" => images}
-	paging = {"page" => page, "limit" => limit, "total_pages" => total_pages.to_s, "total_count" => total_images.to_s }
-	full_envelope["paging"] = paging
-	full_envelope.to_json
-
+	redirect  URI::encode '/'
 end
