@@ -76,6 +76,9 @@ get '/images' do
 end
 
 get '/image/hide/:image_id' do
+
+	format = params[:format]
+
 	db = URI.parse(ENV["DATABASE_URL"])
 	c = PG.connect(
 		:host => db.host, 
@@ -85,7 +88,12 @@ get '/image/hide/:image_id' do
 		:dbname => db.path[1..-1] )
 	c.exec("UPDATE images SET is_hidden = TRUE WHERE image_id = #{params[:image_id]}")
 
-	redirect  URI::encode '/'
+	if format == "json"
+		content_type 'application/json'
+		'{}'
+	else
+		redirect  URI::encode '/'
+	end
 end
 
 get '/image/unhide/:image_id' do
