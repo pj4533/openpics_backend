@@ -38,6 +38,8 @@ post '/images' do
 	end
 	c.exec(query)
 
+	c.close
+
 	content_type 'application/json'
 	'{}'
 end
@@ -88,6 +90,8 @@ get '/image/hide/:image_id' do
 		:dbname => db.path[1..-1] )
 	c.exec("UPDATE images SET is_hidden = TRUE WHERE image_id = #{params[:image_id]}")
 
+	c.close
+
 	if format == "json"
 		content_type 'application/json'
 		'{}'
@@ -106,5 +110,7 @@ get '/image/unhide/:image_id' do
 		:dbname => db.path[1..-1] )
 	c.exec("UPDATE images SET is_hidden = FALSE WHERE image_id = #{params[:image_id]}")
 
+	c.close
+	
 	redirect  URI::encode '/'
 end
