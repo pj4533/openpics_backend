@@ -29,21 +29,24 @@ def get_images(query,limit,page,exclude_hidden)
 	result = c.exec( "SELECT * FROM images #{query_clause} ORDER BY date DESC LIMIT #{limit} OFFSET #{offset}" )
 	
 	result.each do |row|
-		image_provider_specific = nil
-		if row['image_provider_specific'] != "null"
-			image_provider_specific = JSON.parse(row['image_provider_specific'])		
+# change this to just approved provider types, not excluding specific ones
+		if row['image_provider_type'] != "com.saygoodnight.redditporn"
+			image_provider_specific = nil
+			if row['image_provider_specific'] != "null"
+				image_provider_specific = JSON.parse(row['image_provider_specific'])		
+			end
+			images << {
+				"date" => row['date'],
+				"id" => row['image_id'],
+				"imageUrl" => row['image_url'],
+				"title" => row['image_title'],
+				"providerSpecific" => image_provider_specific,
+				"providerType" => row['image_provider_type'],
+				"width" => row['image_width'],
+				"height" => row['image_height'],
+				"hidden" => row['is_hidden']
+			}		
 		end
-		images << {
-			"date" => row['date'],
-			"id" => row['image_id'],
-			"imageUrl" => row['image_url'],
-			"title" => row['image_title'],
-			"providerSpecific" => image_provider_specific,
-			"providerType" => row['image_provider_type'],
-			"width" => row['image_width'],
-			"height" => row['image_height'],
-			"hidden" => row['is_hidden']
-		}
 	end
 
 	c.close	
