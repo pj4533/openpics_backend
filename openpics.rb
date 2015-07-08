@@ -65,6 +65,7 @@ get '/images' do
 	page = params[:page]
 	query = params[:query]
 	limit = params[:limit]
+	hidden = params[:hidden]
 
 	if !page
 		page = 0
@@ -74,7 +75,11 @@ get '/images' do
 	end
 
 	content_type 'application/json'
-	get_images(query,limit,page,true).to_json
+	if !hidden
+		get_images(query,limit,page,true).to_json
+	else
+		get_images(query,limit,page,false).to_json	
+	end
 end
 
 get '/image/hide/:image_id' do
