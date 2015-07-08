@@ -30,7 +30,7 @@ def get_images(query,limit,page,exclude_hidden)
 	
 	result.each do |row|
 # change this to just approved provider types, not excluding specific ones
-		if (row['image_provider_type'] != "com.saygoodnight.redditporn") && (exclude_hidden)
+		if (row['image_provider_type'] != "com.saygoodnight.redditporn") || (!exclude_hidden)
 			image_provider_specific = nil
 			if row['image_provider_specific'] != "null"
 				image_provider_specific = JSON.parse(row['image_provider_specific'])		
