@@ -8,7 +8,6 @@ require 'yaml'
 require 'haml'
 require 'pg'
 require './lib/helpers'
-require 'statsmix'
 
 # enable :inline_templates
 set :root, File.dirname(__FILE__)
@@ -19,8 +18,6 @@ end
 
 post '/images' do
 	image_json = JSON.parse(request.body.read)
-
-	StatsMix.track('Images Favorited', 1, {:meta => {'provider type' => image_json['providerType']}})
 
 	db = URI.parse(ENV["DATABASE_URL"])
 	c = PG.connect(
@@ -60,8 +57,6 @@ get '/webimages' do
 end
 
 get '/images' do
-	StatsMix.track("Pages Returned")
-
 	page = params[:page]
 	query = params[:query]
 	limit = params[:limit]
